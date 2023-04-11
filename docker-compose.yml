@@ -1,0 +1,50 @@
+version: "3.2"
+
+services:
+#MariaDB Container
+  mariadb:
+    image: mariadb:10.7
+    container_name: mariadb
+    hostname: mariadb
+    volumes:
+      - data_db:/var/lib/mysql
+    env_file:
+      - ./mariadb.env
+    restart: always
+
+#GLPI Container
+  glpi:
+    image: diouxx/glpi
+    container_name : glpi
+    hostname: glpi
+    ports:
+      - "80:80"
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - data_glpi:/var/www/html/glpi
+    environment:
+      - TIMEZONE=Europe/Paris
+    restart: always
+
+#PhpMyAdmin Container
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    hostname: phpmyadmin
+    environment:
+        PMA_HOST: mariadb
+    ports:
+        - 8080:80
+    depends_on:
+      - mariadb
+    restart: always
+
+# Création des volumes pour persister les données du GLPI et de la base de donnée
+
+volumes:
+  data_db:
+  data_glpi:
+
+    
